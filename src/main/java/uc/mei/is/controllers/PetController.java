@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.cglib.core.Local;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,9 +48,29 @@ public class PetController {
     }
 
     @PutMapping
-    private String createPet(@RequestBody Pet pet){
-        pets.put(String.valueOf(pets.size()+1), pet);
-        String h = "Ola " + pet.getName() + " " + pet.getId() + " " + pet.getSpecies() + " " + pet.getBirthDate();
-        return h;
+    private boolean createPet(@RequestBody Pet pet){
+        if(pets.get((String.valueOf(pet.getId()))) != null)
+            return false;
+
+        pets.put(String.valueOf(pet.getId()), pet);
+
+        return true;
+    }
+
+    @PatchMapping("/{id}")
+    private boolean getPetById(@PathVariable String id, @RequestBody Pet pet){
+        Pet petChoose = pets.get(String.valueOf(id));
+        if(petChoose == null) return false;
+        if(pet.getName() != null)
+            petChoose.setName(pet.getName());
+        if(pet.getWeight() != 0)
+            petChoose.setWeight((pet.getWeight()));
+        if(pet.getBirthDate() != null)
+            petChoose.setBirthDate((pet.getBirthDate()));
+        if(pet.getSpecies() != null)
+            petChoose.setSpecies(pet.getSpecies());
+
+        pets.put(String.valueOf(id), petChoose);
+        return true;
     }
 }
