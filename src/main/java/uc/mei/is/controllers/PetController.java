@@ -1,12 +1,9 @@
 package uc.mei.is.controllers;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +24,7 @@ public class PetController {
     private Map<String, Pet> pets;
     
     @GetMapping
+    //devolve todos os animais disponíveis na base de dados
     private Flux<Pet> getAllPets(){
         if(pets == null){
             pets = new HashMap<>();
@@ -37,17 +35,20 @@ public class PetController {
     }
 
     @GetMapping("/{id}")
+    //devolve o animal que contém o ID procurado
     private Mono<Pet> getPetById(@PathVariable String id){
         return Mono.just(pets.get(id));
     }
 
     @DeleteMapping("/{id}")
+    //elimina o animal que contém o ID indicado
     private boolean delPetById(@PathVariable String id){
         pets.remove(id);
         return true;
     }
 
     @PutMapping
+    //cria o animal com as informações inseridas
     private boolean createPet(@RequestBody Pet pet){
         if(pets.get((String.valueOf(pet.getId()))) != null)
             return false;
@@ -58,7 +59,8 @@ public class PetController {
     }
 
     @PatchMapping("/{id}")
-    private boolean getPetById(@PathVariable String id, @RequestBody Pet pet){
+    //edita o animal através do ID com as novas informações inseridas
+    private boolean editPetById(@PathVariable String id, @RequestBody Pet pet){
         Pet petChoose = pets.get(String.valueOf(id));
         if(petChoose == null) return false;
         if(pet.getName() != null)
