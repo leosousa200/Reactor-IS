@@ -28,8 +28,12 @@ public class PetController {
     private Flux<Pet> getAllPets(){
         if(pets == null){
             pets = new HashMap<>();
+            pets.put("5", new Pet(5, 21.7, "nit", "dog", LocalDate.now()));
+            pets.put("6", new Pet(6, 10.6, "lak", "cat", LocalDate.now()));
             pets.put("1", new Pet(1, 7.3, "rob", "some", LocalDate.now()));
             pets.put("2", new Pet(2, 4.6, "john", "other", LocalDate.now()));
+            pets.put("3", new Pet(3, 11.1, "lion", "dog", LocalDate.now()));
+            pets.put("4", new Pet(4, 13.4, "eve", "cat", LocalDate.now()));
         }
         return Flux.fromIterable(pets.values());
     }
