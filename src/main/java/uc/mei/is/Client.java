@@ -76,7 +76,7 @@ public class Client {
         });
 
 
-        //Total number	of	Pets.
+        //Total number	of	Pets. (endpoint)
         petsFlux.collectList().subscribe(
             i -> {
                 try {
@@ -89,7 +89,7 @@ public class Client {
             }
         );
 
-        //Total	number of	dogs.
+        //Total	number of dogs. (endpoint novo)
         petsFlux.filter(i -> i.getSpecies().equalsIgnoreCase("dog")).collectList().subscribe(
             i -> {
                 try {
@@ -143,7 +143,7 @@ public class Client {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            });
+        });
     }
 }
 
