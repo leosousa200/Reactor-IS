@@ -29,8 +29,8 @@ public class OwnerController {
     @GetMapping
     //devolve todos os donos disponíveis na base de dados
     private Flux<Owner> getAllOwners(){
-        List<Pet> pets1 = new ArrayList<>(List.of(new Pet(1, 7.3, "rob", "some", LocalDate.now()), new Pet(2, 7.3, "john", "some", LocalDate.now())));
-        List<Pet> pets2 = new ArrayList<>(List.of(new Pet(3, 7.3, "rob", "some", LocalDate.now()), new Pet(4, 7.3, "john", "some", LocalDate.now())));
+        List<Pet> pets1 = new ArrayList<>(List.of(new Pet(1, 7.3, "mike", "some", LocalDate.now()), new Pet(2, 7.3, "john", "some", LocalDate.now())));
+        List<Pet> pets2 = new ArrayList<>(List.of(new Pet(3, 7.3, "rob", "some", LocalDate.now()), new Pet(4, 7.3, "rick", "some", LocalDate.now()), new Pet(5, 12.3, "thunder", "cat", LocalDate.now())));
         if(owners == null){
             owners = new HashMap<>();
             owners.put("1", new Owner(1, 914851551, "Ricardo", pets1));

@@ -1,6 +1,8 @@
 package uc.mei.is.controllers;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,11 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import uc.mei.is.models.Pet;
+import uc.mei.is.utils.PetComparator;
 
 @RestController
 @RequestMapping("pets")
@@ -42,6 +46,27 @@ public class PetController {
     //devolve o animal que contém o ID procurado
     private Mono<Pet> getPetById(@PathVariable String id){
         return Mono.just(pets.get(id));
+    }
+
+
+    @GetMapping("/count")
+    //devolve o animal que contém o ID procurado
+    private Mono<Long> getNrPets(@RequestParam(required = false) String specie){
+        if(specie != null) return Flux.fromIterable(pets.values()).filter(pet -> pet.getSpecies().equalsIgnoreCase(specie)).count();
+        return Mono.just(Long.valueOf(pets.size()));
+    }
+
+    @GetMapping("/eldest")
+    //devolve o animal que contém o ID procurado
+    private Mono<String> getOldestPed(){
+        ArrayList<Pet> petsList = new ArrayList<>(pets.values());
+        Collections.sort(petsList, new PetComparator());
+        return Mono.just(petsList.get(0).getName());
+        /*return Mono           //operação bloqueante
+                .just(Flux
+                    .fromIterable(pets.values())
+                        .sort((a,b) -> {return (a.getBirthDate().compareTo(b.getBirthDate()));})
+                        .last().block().getName());*/
     }
 
     @DeleteMapping("/{id}")
