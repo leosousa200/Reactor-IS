@@ -26,6 +26,7 @@ public class OwnerController {
 
     private Map<String, Owner> owners;
 
+
     @GetMapping
     //devolve todos os donos disponíveis na base de dados
     private Flux<Owner> getAllOwners(){
