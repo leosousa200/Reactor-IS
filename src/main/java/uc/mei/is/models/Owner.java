@@ -1,7 +1,10 @@
 package uc.mei.is.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +19,6 @@ public class Owner {
 
         private String name;
 
-        private List<Pet> pets;
+        //@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Pet> pets = new ArrayList<>();
     }

@@ -1,10 +1,7 @@
 package uc.mei.is;
 
-//import org.springframework.data.repo
+import org.springframework.data.repository.CrudRepository;
 
-//public interface PetRepository extends ReactiveCrudRepository<Pet, Long>{
-public interface PetRepository{
+import uc.mei.is.models.Pet;
 
-}
-
-//spring.datasource.driver-class-name
+public interface PetRepository extends CrudRepository<Pet, Integer> {}
