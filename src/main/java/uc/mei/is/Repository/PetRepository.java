@@ -1,4 +1,4 @@
-package uc.mei.is;
+package uc.mei.is.Repository;
 
 import org.springframework.data.repository.CrudRepository;
 

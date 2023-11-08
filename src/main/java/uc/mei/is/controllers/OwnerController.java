@@ -1,6 +1,5 @@
 package uc.mei.is.controllers;
 
-import java.time.LocalDate;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -16,9 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import uc.mei.is.OwnerRepository;
+import uc.mei.is.Repository.OwnerRepository;
 import uc.mei.is.models.Owner;
-import uc.mei.is.models.Pet;
 
 @RestController
 @RequestMapping("owners")
@@ -75,7 +73,7 @@ public class OwnerController {
             return false;
         }
         ownerRepository.createOwner(owner.getPhoneNumber(), owner.getName());
-        logger.info("Created owner [" + owner.getID() +"] invocation.");
+        logger.info("Created owner invocation.");
         return true;
     }
 

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import uc.mei.is.OwnerRepository;
-import uc.mei.is.PetRepository;
+import uc.mei.is.Repository.OwnerRepository;
+import uc.mei.is.Repository.PetRepository;
 import uc.mei.is.models.Owner;
 import uc.mei.is.models.Pet;
 import uc.mei.is.utils.PetComparator;
@@ -89,14 +89,10 @@ public class PetController {
             return false;
         }
         Owner owner = ownerChosen.get();
-//        List<Pet> pets = owner.getPets();
-//        pets.add(pet);
-//        owner.setPets(pets);
 
-//        ownerRepository.save(owner);
         pet.setOwner(owner);
         petRepository.save(pet);
-        logger.info("Created pet [" + ownerId +"] invocation.");
+        logger.info("Created pet invocation.");
         return true;
     }
 

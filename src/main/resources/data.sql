@@ -4,17 +4,17 @@ DROP TABLE IF EXISTS owners;
 CREATE TABLE owners
 (
     ID SERIAL PRIMARY KEY,
-    phone_number    BIGINT,
-    name      VARCHAR(512)
+    phone_number    BIGINT NOT NULL,
+    name      VARCHAR(512) NOT NULL
 );
 
 CREATE TABLE pets
 (
     ID        SERIAL PRIMARY KEY,
-    weight    NUMERIC(4, 2),
-    name      VARCHAR(512),
-    species   VARCHAR(512),
-    birth_date DATE,
+    weight    NUMERIC(4, 2) NOT NULL,
+    name      VARCHAR(512) NOT NULL,
+    species   VARCHAR(512) NOT NULL,
+    birth_date DATE NOT NULL,
     owner_id BIGINT NOT NULL
 );
 

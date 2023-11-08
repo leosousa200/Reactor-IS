@@ -1,4 +1,4 @@
-package uc.mei.is;
+package uc.mei.is.Repository;
 
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
