@@ -4,14 +4,14 @@ DROP TABLE IF EXISTS owners;
 CREATE TABLE owners
 (
     ID SERIAL PRIMARY KEY,
-    phoneNumber    BIGINT,
+    phone_number    BIGINT,
     name      VARCHAR(512)
 );
 
 CREATE TABLE pets
 (
     ID        SERIAL PRIMARY KEY,
-    weight    REAL,
+    weight    NUMERIC(4, 2),
     name      VARCHAR(512),
     species   VARCHAR(512),
     birth_date DATE,
@@ -20,10 +20,12 @@ CREATE TABLE pets
 
 ALTER TABLE pets ADD CONSTRAINT pet_fk1 FOREIGN KEY (owner_id) REFERENCES owners(id);
 
-INSERT INTO owners (phoneNumber, name)
+INSERT INTO owners (phone_number, name)
 VALUES (913051482, 'Joao'),
-       (910548231, 'Leandro'),
-       (912594123, 'Rodrigo');
+       (910548231, 'Carla'),
+       (912951239, 'Rodrigo'),
+       (905123512, 'Joana'),
+       (912594123, 'Maria');
 
 INSERT INTO pets (weight, name, species, birth_date, owner_id)
 VALUES (21.1, 'nit', 'bird', '2023-08-17', 1),

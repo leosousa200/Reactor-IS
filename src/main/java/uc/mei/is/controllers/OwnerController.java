@@ -1,11 +1,10 @@
 package uc.mei.is.controllers;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import uc.mei.is.OwnerRepository;
 import uc.mei.is.models.Owner;
 import uc.mei.is.models.Pet;
 
@@ -25,37 +25,46 @@ import uc.mei.is.models.Pet;
 public class OwnerController {
 
     private Map<String, Owner> owners;
+    private OwnerRepository ownerRepository;
+    private Logger logger;
 
+    public OwnerController(OwnerRepository ownerRepository) {
+        this.ownerRepository = ownerRepository;
+        logger = LoggerFactory.getLogger(OwnerController.class);
+    }
 
     @GetMapping
     //devolve todos os donos disponíveis na base de dados
     private Flux<Owner> getAllOwners(){
-        /*List<Pet> pets1 = new ArrayList<>(List.of(new Pet(1, 7.3, "mike", "some", LocalDate.now()), new Pet(2, 7.3, "john", "some", LocalDate.now())));
-        List<Pet> pets2 = new ArrayList<>(List.of(new Pet(3, 7.3, "rob", "some", LocalDate.now()), new Pet(4, 7.3, "rick", "some", LocalDate.now()), new Pet(5, 12.3, "thunder", "cat", LocalDate.now())));
-        if(owners == null){
-            owners = new HashMap<>();
-            owners.put("1", new Owner(1, 914851551, "Ricardo", pets1));
-            owners.put("2", new Owner(2, 910539510, "Maria", pets2));
-        }*/
-        return Flux.fromIterable(owners.values());
+        logger.info("alguem debug");
+        return Flux.fromIterable(ownerRepository.findAll());
     }
 
     @GetMapping("/{id}")
     private Mono<Owner> getOwnerByID(@PathVariable String id){
-        return Mono.just(owners.get(id));
+        Optional<Owner> ownerChosen= ownerRepository.findById(Integer.valueOf(id));
+        if(ownerChosen != null) return Mono.just( ownerChosen.get());
+        return null;
     }
 
     @DeleteMapping("/{id}")
     private boolean delOwnerByID(@PathVariable String id){
-        return (owners.remove(id) == null ? false : true);
+        Owner ownerChosen = ownerRepository.findById(Integer.valueOf(id)).get();
+        if(ownerChosen == null) return false;
+        if(ownerChosen.getPets().size() == 0) {
+            ownerRepository.deleteById(Integer.valueOf(id));
+            return true;
+        }
+        return false;
     }
 
     @PutMapping()
     private boolean createOwner(@RequestBody Owner owner){
-        if(owners.get((String.valueOf(owner.getId()))) != null)
-        return false;
+        if(owner.getName().isEmpty() || owner.getPhoneNumber() == 0)
+            return false;
 
-        owners.put(String.valueOf(owner.getId()), owner);
+        ownerRepository.save(owner);
+
         return true;
     }
 

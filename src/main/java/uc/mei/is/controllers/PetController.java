@@ -3,6 +3,8 @@ package uc.mei.is.controllers;
 import java.time.LocalDate;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,9 +26,10 @@ import uc.mei.is.utils.PetComparator;
 public class PetController {
 
     private final PetRepository petRepository;
-    private static int PetIDs = 0;
+    private Logger logger;
     public PetController(PetRepository petRepository) {
         this.petRepository = petRepository;
+        logger = LoggerFactory.getLogger(OwnerController.class);
       }
     
     
@@ -98,7 +101,6 @@ public class PetController {
         if(pet.getSpecies() != null)
             petChoose.setSpecies(pet.getSpecies());
 
-        //pets.put(String.valueOf(id), petChoose);
         return true;
     }
 }

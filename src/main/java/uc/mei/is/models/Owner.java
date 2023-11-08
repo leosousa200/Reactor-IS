@@ -2,9 +2,10 @@ package uc.mei.is.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,13 +13,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "owners")
 public class Owner {
-        private int id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private int ID;
 
         private long phoneNumber;
 
         private String name;
 
-        //@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Pet> pets = new ArrayList<>();
-    }
+        @OneToMany(mappedBy="owner", fetch = FetchType.EAGER)
+        @JsonManagedReference
+        private List<Pet> pets;
+}

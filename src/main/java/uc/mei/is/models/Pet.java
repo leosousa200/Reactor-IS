@@ -3,6 +3,7 @@ package uc.mei.is.models;
 import java.time.LocalDate;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,9 @@ public class Pet {
 
     private LocalDate birthDate;
 
-//    @ManyToOne
-    private int ownerId;
+    @ManyToOne()
+    @JoinColumn(name = "ownerId")
+    @JsonBackReference
+    private Owner owner;
+
 }
