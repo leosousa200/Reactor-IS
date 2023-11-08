@@ -1,6 +1,5 @@
 package uc.mei.is.controllers;
 
-import java.time.LocalDate;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -17,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import uc.mei.is.OwnerRepository;
 import uc.mei.is.PetRepository;
+import uc.mei.is.models.Owner;
 import uc.mei.is.models.Pet;
 import uc.mei.is.utils.PetComparator;
 
@@ -26,16 +27,20 @@ import uc.mei.is.utils.PetComparator;
 public class PetController {
 
     private final PetRepository petRepository;
+    private final OwnerRepository ownerRepository;
+
     private Logger logger;
-    public PetController(PetRepository petRepository) {
+    public PetController(PetRepository petRepository, OwnerRepository ownerRepository) {
         this.petRepository = petRepository;
-        logger = LoggerFactory.getLogger(OwnerController.class);
+        this.ownerRepository = ownerRepository;
+        logger = LoggerFactory.getLogger(PetController.class);
       }
     
     
     @GetMapping
     //devolve todos os animais disponíveis na base de dados
     private Flux<Pet> getAllPets(){
+        logger.info("Get all pets invocation.");
         return Flux.fromIterable(petRepository.findAll());
     }
 
@@ -43,9 +48,75 @@ public class PetController {
     //devolve o animal que contém o ID procurado
     private Mono<Pet> getPetById(@PathVariable String id){
         Optional<Pet> petChosen= petRepository.findById(Integer.valueOf(id));
-        if(petChosen != null) return Mono.just( petChosen.get());
+        if(petChosen.isPresent()) {
+            Pet pet = petChosen.get();
+            logger.info("Get pet [" + pet.getID() +"] invocation.");
+            return Mono.just(pet);
+        }
+        logger.error("Get pet error, ID " +  id + " dont exist!");
         return null;
     }
+
+    @DeleteMapping("/{id}")
+    //elimina o animal que contém o ID indicado
+    private boolean delPetById(@PathVariable String id){
+
+        Optional<Pet> petChosen= petRepository.findById(Integer.valueOf(id));
+        if(!petChosen.isPresent()){
+            logger.error("Delete pet error, ID " +  id + " dont exist!");
+            return false;
+        }
+        Pet pet = petChosen.get();
+        Owner petOwner = pet.getOwner();
+
+        petOwner.getPets().remove(pet);
+        ownerRepository.save(petOwner);
+        petRepository.delete(pet);
+        logger.info("Delete pet [" + pet.getID() +"] invocation.");
+
+        return true;
+    }
+
+    @PutMapping("/{ownerId}")
+    //cria o animal com as informações inseridas
+    private boolean createPet(@PathVariable(required = true) int ownerId,@RequestBody Pet pet){
+        if(pet.getName().isEmpty() || pet.getSpecies().isEmpty() || pet.getWeight() == 0)
+            return false;
+
+        Optional<Owner> ownerChosen = ownerRepository.findById(ownerId);
+        if(!ownerChosen.isPresent()){
+            logger.error("Create pet error, owner ID " +  ownerId + " dont exist!");
+            return false;
+        }
+        Owner owner = ownerChosen.get();
+        List<Pet> pets = owner.getPets();
+        pets.add(pet);
+        owner.setPets(pets);
+
+//        ownerRepository.save(owner);
+        pet.setOwner(owner);
+        petRepository.save(pet);
+        logger.info("Created pet [" + ownerId +"] invocation.");
+        return true;
+    }
+
+    @PatchMapping("/{id}")
+    //edita o animal através do ID com as novas informações inseridas
+    private boolean editPetById(@PathVariable String id, @RequestBody Pet pet){
+        Pet petChoose = null;
+        if(petChoose == null) return false;
+        if(pet.getName() != null)
+            petChoose.setName(pet.getName());
+        if(pet.getWeight() != 0)
+            petChoose.setWeight((pet.getWeight()));
+        if(pet.getBirthDate() != null)
+            petChoose.setBirthDate((pet.getBirthDate()));
+        if(pet.getSpecies() != null)
+            petChoose.setSpecies(pet.getSpecies());
+
+        return true;
+    }
+
 
 
     @GetMapping("/count")
@@ -69,38 +140,4 @@ public class PetController {
                         .last().block().getName());*/
     }
 
-    @DeleteMapping("/{id}")
-    //elimina o animal que contém o ID indicado
-    private boolean delPetById(@PathVariable String id){
-        petRepository.deleteById(Integer.valueOf(id));
-        return true;
-    }
-
-    @PutMapping
-    //cria o animal com as informações inseridas
-    private boolean createPet(@RequestBody Pet pet){
-        if(pet.getName().isEmpty() || pet.getSpecies().isEmpty() || pet.getWeight() == 0)
-            return false;
-
-        petRepository.save(pet);
-
-        return true;
-    }
-
-    @PatchMapping("/{id}")
-    //edita o animal através do ID com as novas informações inseridas
-    private boolean editPetById(@PathVariable String id, @RequestBody Pet pet){
-        Pet petChoose = null;
-        if(petChoose == null) return false;
-        if(pet.getName() != null)
-            petChoose.setName(pet.getName());
-        if(pet.getWeight() != 0)
-            petChoose.setWeight((pet.getWeight()));
-        if(pet.getBirthDate() != null)
-            petChoose.setBirthDate((pet.getBirthDate()));
-        if(pet.getSpecies() != null)
-            petChoose.setSpecies(pet.getSpecies());
-
-        return true;
-    }
 }

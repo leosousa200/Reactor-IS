@@ -24,7 +24,6 @@ import uc.mei.is.models.Pet;
 @RequestMapping("owners")
 public class OwnerController {
 
-    private Map<String, Owner> owners;
     private OwnerRepository ownerRepository;
     private Logger logger;
 
@@ -36,25 +35,36 @@ public class OwnerController {
     @GetMapping
     //devolve todos os donos disponíveis na base de dados
     private Flux<Owner> getAllOwners(){
-        logger.info("alguem debug");
+        logger.info("Get all owners invocation.");
         return Flux.fromIterable(ownerRepository.findAll());
     }
 
     @GetMapping("/{id}")
     private Mono<Owner> getOwnerByID(@PathVariable String id){
         Optional<Owner> ownerChosen= ownerRepository.findById(Integer.valueOf(id));
-        if(ownerChosen != null) return Mono.just( ownerChosen.get());
+        if(ownerChosen.isPresent()) {
+            Owner owner = ownerChosen.get();
+            logger.info("Get owner [" + owner.getID() +"] invocation.");
+            return Mono.just(owner);
+        }
+        logger.error("Get owner error, ID " +  id + " dont exist!");
         return null;
     }
 
     @DeleteMapping("/{id}")
     private boolean delOwnerByID(@PathVariable String id){
-        Owner ownerChosen = ownerRepository.findById(Integer.valueOf(id)).get();
-        if(ownerChosen == null) return false;
-        if(ownerChosen.getPets().size() == 0) {
+        Optional<Owner> ownerChosen= ownerRepository.findById(Integer.valueOf(id));
+        if(!ownerChosen.isPresent()){
+            logger.error("Delete owner error, ID " +  id + " dont exist!");
+            return false;
+        }
+        Owner owner = ownerChosen.get();
+        if(owner.getPets().size() == 0) {
+            logger.info("Delete owner [" + owner.getID() +"] invocation.");
             ownerRepository.deleteById(Integer.valueOf(id));
             return true;
         }
+        logger.error("Delete owner error, ID " +  id + " have pets associated!");
         return false;
     }
 
@@ -62,7 +72,7 @@ public class OwnerController {
     private boolean createOwner(@RequestBody Owner owner){
         if(owner.getName().isEmpty() || owner.getPhoneNumber() == 0)
             return false;
-
+        owner.setPets(new ArrayList<>());
         ownerRepository.save(owner);
 
         return true;
@@ -70,7 +80,7 @@ public class OwnerController {
 
     @PatchMapping("/{id}")
     private boolean editOwnerByID(@PathVariable String id, @RequestBody Owner owner){
-        Owner ownerChoose = owners.get(String.valueOf(id));
+        /*Owner ownerChoose = owners.get(String.valueOf(id));
         if(ownerChoose == null) return false;
         if(owner.getName() != null)
             ownerChoose.setName(owner.getName());
@@ -80,7 +90,7 @@ public class OwnerController {
             ownerChoose.setPets(((owner.getPets())));
 
         owners.put(String.valueOf(id), ownerChoose);
-
+*/
         return true;
     }
     
