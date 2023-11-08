@@ -70,27 +70,32 @@ public class OwnerController {
 
     @PutMapping()
     private boolean createOwner(@RequestBody Owner owner){
-        if(owner.getName().isEmpty() || owner.getPhoneNumber() == 0)
+        if(owner.getName().isEmpty() || owner.getPhoneNumber() == 0) {
+            logger.error("Create owner error, it dont have all the parameters needed!");
             return false;
-        owner.setPets(new ArrayList<>());
-        ownerRepository.save(owner);
-
+        }
+        ownerRepository.createOwner(owner.getPhoneNumber(), owner.getName());
+        logger.info("Created owner [" + owner.getID() +"] invocation.");
         return true;
     }
 
     @PatchMapping("/{id}")
-    private boolean editOwnerByID(@PathVariable String id, @RequestBody Owner owner){
-        /*Owner ownerChoose = owners.get(String.valueOf(id));
-        if(ownerChoose == null) return false;
-        if(owner.getName() != null)
-            ownerChoose.setName(owner.getName());
-        if(owner.getPhoneNumber() != 0)
-            ownerChoose.setPhoneNumber(owner.getPhoneNumber());
-        if(owner.getPets() != null)
-            ownerChoose.setPets(((owner.getPets())));
+    private boolean editOwnerByID(@PathVariable int id, @RequestBody Owner owner){
+        Optional<Owner> ownerChosen = ownerRepository.findById(id);
+        if(!ownerChosen.isPresent()){
+            logger.error("Patch owner error, pet ID " +  id + " dont exist!");
+            return false;
+        }
+        Owner ownerOld = ownerChosen.get();
 
-        owners.put(String.valueOf(id), ownerChoose);
-*/
+        if(owner.getName() != null)
+            ownerOld.setName(owner.getName());
+        if(owner.getPhoneNumber() != 0)
+            ownerOld.setPhoneNumber((owner.getPhoneNumber()));
+
+        ownerRepository.save(ownerOld);
+        logger.info("Patched owner [" + id +"] invocation.");
+
         return true;
     }
     

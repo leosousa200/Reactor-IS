@@ -77,9 +77,9 @@ public class PetController {
         return true;
     }
 
-    @PutMapping("/{ownerId}")
+    @PutMapping
     //cria o animal com as informações inseridas
-    private boolean createPet(@PathVariable(required = true) int ownerId,@RequestBody Pet pet){
+    private boolean createPet(@RequestParam(required = true) int ownerId, @RequestBody Pet pet){
         if(pet.getName().isEmpty() || pet.getSpecies().isEmpty() || pet.getWeight() == 0)
             return false;
 
@@ -89,9 +89,9 @@ public class PetController {
             return false;
         }
         Owner owner = ownerChosen.get();
-        List<Pet> pets = owner.getPets();
-        pets.add(pet);
-        owner.setPets(pets);
+//        List<Pet> pets = owner.getPets();
+//        pets.add(pet);
+//        owner.setPets(pets);
 
 //        ownerRepository.save(owner);
         pet.setOwner(owner);
@@ -102,17 +102,25 @@ public class PetController {
 
     @PatchMapping("/{id}")
     //edita o animal através do ID com as novas informações inseridas
-    private boolean editPetById(@PathVariable String id, @RequestBody Pet pet){
-        Pet petChoose = null;
-        if(petChoose == null) return false;
+    private boolean editPetById(@PathVariable int id, @RequestBody Pet pet){
+        Optional<Pet> petChosen = petRepository.findById(id);
+        if(!petChosen.isPresent()){
+            logger.error("Patch pet error, pet ID " +  id + " dont exist!");
+            return false;
+        }
+        Pet petOld = petChosen.get();
+
         if(pet.getName() != null)
-            petChoose.setName(pet.getName());
+            petOld.setName(pet.getName());
         if(pet.getWeight() != 0)
-            petChoose.setWeight((pet.getWeight()));
+            petOld.setWeight((pet.getWeight()));
         if(pet.getBirthDate() != null)
-            petChoose.setBirthDate((pet.getBirthDate()));
+            petOld.setBirthDate((pet.getBirthDate()));
         if(pet.getSpecies() != null)
-            petChoose.setSpecies(pet.getSpecies());
+            petOld.setSpecies(pet.getSpecies());
+
+        petRepository.save(petOld);
+        logger.info("Patched pet [" + id +"] invocation.");
 
         return true;
     }
