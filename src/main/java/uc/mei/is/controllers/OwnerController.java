@@ -99,10 +99,10 @@ public class OwnerController {
 
 
     //comentar para verificar tentativa de conexão do cliente
-    @GetMapping("/erro")
-    private boolean QueryError(){
-        return true;
-    }
+    //@GetMapping("/erro")
+    //private boolean QueryError(){
+    //    return true;
+    //}
 
     
 }
